@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras</title>
+    <link rel="stylesheet" href="mensajes.css">
+    <link rel="stylesheet" href="estilos.css">
+    <style>
+        #lista-palabras {
+           font-size: clamp(10px, 1,5vw, 14px); /* Controla tamaño más reducido que celda-panel */
+           line-height: 1.3;
+           max-height: 200px; /* O ajustá según necesidad */
+           overflow-y: auto;  /* Añade scroll si se pasa del alto máximo */
+           text-align: center;
+        }
+
+        #lista-palabras ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #lista-palabras ul li {
+            margin-bottom: 5px;
+        }
+
+        .titulo-referencias {
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            white-space: nowrap; /* 👈 Esto impide el salto de línea */
+            text-align: center;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .found {
+            background-color: yellow;
+        }
+
+</style>
+</head>
+<body>
+    <div id="start-button-container">
+        <button id="start-button">COMENZAR EL JUEGO</button>
+    </div>
+
+    <div class="container">
+<table>
+<tr>
+  <th colspan="2" class="title-cell" style="text-align: center;">
+    <span class="titulo-principal">SOPA DE LETRAS</span><br>
+    <span class="titulo-secundario">PALABRAS DEL HIMNO NACIONAL</span>
+  </th>
+</tr>
+        
+            <tr>
+                <td id="align-center-center">
+                    <div id="puzzle"></div>
+                </td>
+                <td id="align-left-top" class="celda-panel">
+                    <div id="panel">
+                        <div>
+                            <div id="actualUsername"></div>
+                            <br>
+                            <div id="reloj">Tiempo: 00:00</div>
+                            <div id="intentos"></div>
+                            <div id="puntaje">Puntaje: 0</div>
+                            <br><br>
+                        </div>
+                        <div class="titulo-referencias">PALABRA A ENCONTRAR</div>
+                        <div id="lista-palabras">
+                            <ul>
+                                <li id="palabras"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="Sound/Carefree.mp3" type="audio/mpeg">
+        Tu navegador no soporta la reproducción de audio.
+    </audio>
+
+    <script src="script.js"></script>
+    <script>
+        window.addEventListener("load", function() {
+            const actualUsername = localStorage.getItem("ActualUs");
+            document.getElementById("actualUsername").textContent = `Usuario: ${actualUsername}`;
+        });
+
+        document.getElementById("start-button").addEventListener("click", function() {
+            const startButtonContainer = document.getElementById("start-button-container");
+            startButtonContainer.style.display = "none"; // Ocultar el botón de comenzar
+
+            const container = document.querySelector(".container");
+            container.style.display = "block"; // Mostrar la sopa de letras
+
+            const audio = document.getElementById("background-music");
+            audio.play();
+
+            createPuzzle(); // Iniciar el juego después de hacer clic en comenzar
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HISTORIAL DE JUEGOS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: inline-block;
+            padding: 20px;
+            width: 50%;
+            overflow-x: auto;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .recent-container {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: inline-block;
+            padding: 20px;
+            width: 50%;
+            overflow-x: auto;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 5%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 10%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 50%;
+            text-align: left;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%;
+        }
+
+        .title-line1 {
+            font-size: 24px;
+        }
+
+        .title-line2 {
+            font-size: 12px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: red;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .button {
+            width: calc(15% - 10px);
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #backButton {
+        }
+
+        #continueButton {
+            background-color: #3498db; /* Azul */
+            color: #fff;
+        }
+
+         #GRALButton {
+            background-color: #3344db; /* Azul mas oscuro */
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <center>
+            <h1 class="title-line1">HISTORIAL DE JUEGOS</h1>
+            <h2 class="title-line2">SOPA DE LETRAS: Palabras de Nuestro Himno Nacional</h2>
+        </center>
+        <table id="games-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Puntaje</th>
+                </tr>
+            </thead>
+            <tbody id="games-history"></tbody>
+        </table>
+    </div>
+
+    <div id="recent-container" class="recent-container" style="display: none;">
+        <center>
+            <h2 class="title-line2">TU PUNTAJE</h2>
+        </center>
+        <table id="recent-game-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Puntaje</th>
+                </tr>
+            </thead>
+            <tbody id="recent-game-history"></tbody>
+        </table>
+    </div>
+
+    <div class="button-container">
+       
+
+        <button id="continueButton" class="button">Continuar</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const gamesHistory = JSON.parse(localStorage.getItem("gamesHistory"));
+
+            if (gamesHistory && gamesHistory.length > 0) {
+                // Filtrar los juegos para encontrar aquellos que corresponden al juego "HNA_sdl"
+                const filteredGames = gamesHistory.filter(game => game.game === "HNA_sdl");
+
+                if (filteredGames.length > 0) {
+                    // Ordenar los juegos filtrados por puntaje en orden descendente
+                    filteredGames.sort((a, b) => b.puntaje - a.puntaje);
+
+                    // Obtener el juego destacado (el de número más alto en "juegonumero")
+                    const maxGame = filteredGames.reduce((max, game) => game.juegonumero > max.juegonumero ? game : max);
+
+                    // Mostrar solo los primeros 5 juegos en la tabla principal
+                    const top5Games = filteredGames.slice(0, 5);
+                    const tbody = document.getElementById("games-history");
+                    top5Games.forEach((game, index) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${game.fecha}</td>
+                            <td>${game.usuario}</td>
+                            <td>${game.puntaje}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Mostrar el juego destacado en "Tu Puntaje"
+                    const recentContainer = document.getElementById("recent-container");
+                    const recentTbody = document.getElementById("recent-game-history");
+                    const recentRow = document.createElement("tr");
+                    recentRow.classList.add("highlight");
+                    recentRow.innerHTML = `
+                        <td>${filteredGames.indexOf(maxGame) + 1}</td>
+                        <td>${maxGame.fecha}</td>
+                        <td>${maxGame.usuario}</td>
+                        <td>${maxGame.puntaje}</td>
+                    `;
+                    recentTbody.appendChild(recentRow);
+                    recentContainer.style.display = "block";
+                } else {
+                    const historyElement = document.getElementById("games-history");
+                    historyElement.innerHTML = "<tr><td colspan='4'>No hay historial disponible para este juego.</td></tr>";
+                }
+            } else {
+                const historyElement = document.getElementById("games-history");
+                historyElement.innerHTML = "<tr><td colspan='4'>No hay historial disponible para este juego.</td></tr>";
+            }
+
+
+
+
+            // Proporcionar un botón para continuar
+            document.getElementById("continueButton").addEventListener("click", function() {
+                window.location.href = '../3/3.html'; // Reemplaza con la URL correspondiente
+            });
+
+
+
+        });
+    </script>
+</body>
+</html>
+
